@@ -1,17 +1,39 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import './lobby.css'
+import { useNavigate } from 'react-router-dom'
+
+import { useSocket } from '../context/SocketProvider.jsx'
 
 function LobbyScreen() {
   const [email, setEmail] = useState('')
   const [room, setRoom] = useState('')
+  const socket = useSocket()
+  const navigate = useNavigate()
 
-  function handleSubmitForm(event) {
+  const handleJoinRoom = useCallback((data) => {
+    const { room } = data
+    //  console.log(`Email: ${email}, Room: ${room}`);
+    console.log(`Data received from Bknd`, data)
+    navigate(`/room/${room}`);// it will take u to the room u mentioned ...now go to room.jsx 
+
+  }, [navigate])
+
+  const handleSubmitForm = useCallback((event) => {
     event.preventDefault()
 
     // Connect your Socket.IO room-join flow here.
-    // Example: onJoinRoom({ email, room })
-  }
+    socket.emit('room:join', { email, room })
+  }, [email, room, socket])
 
+  useEffect(() => {
+    if (!socket) return
+
+    socket.on('room:join', handleJoinRoom)
+
+    return () => {
+      socket.off('room:join', handleJoinRoom);
+    }
+  }, [socket, handleJoinRoom])
   return (
     <main className="lobby-page">
       <header className="lobby-header">
