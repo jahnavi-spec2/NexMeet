@@ -27,6 +27,14 @@ io.on("connection", (socket) => {
     socket.join(room);//pehle new user ko roompejoin kraenge but before it u need to emit tht new user has joined
     io.to(socket.id).emit("room:join", { email, room });
   });
+
+  socket.on("user:call", ({ to, offer }) => {
+    io.to(to).emit("incoming:call", { from: socket.id, offer });
 });
 
-console.log(`Socket server running on port ${port}`);
+
+socket.on("call:accepted", ({ to, answer }) => {
+  io.to(to).emit("call:accepted", { from: socket.id, answer });
+});
+
+console.log(`Socket server running on port ${port}`)
