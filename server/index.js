@@ -37,4 +37,13 @@ socket.on("call:accepted", ({ to, answer }) => {
   io.to(to).emit("call:accepted", { from: socket.id, answer });
 });
 
+socket.on('peer:nego:needed',({to,offer})=>{
+  io.to(to).emit("peer:nego:needed",{from:socket.id,offer});
+})
+
+
+socket.on("peer:nego:done",({to,ans})=>{
+io.to(to).emit("peer:nego:final", {from:socket.id,ans});
+})
+})
 console.log(`Socket server running on port ${port}`)
