@@ -21,6 +21,11 @@ class PeerService{
     if(this.peer)
       {
         await this.peer.setRemoteDescription(offer);
+        if(stream){
+          for(const track of stream.getTracks()){
+            this.peer.addTrack(track,stream);
+          }
+        }
         
         const ans= await this.peer.createAnswer();
         await this.peer.setLocalDescription(new RTCSessionDescription(ans));
@@ -38,7 +43,7 @@ class PeerService{
 
 
 
-    async setLocalDescription(answer){
+    async setRemoteDescription(answer){
         if(this.peer){
             await this.peer.setRemoteDescription(new RTCSessionDescription(answer));
         }
